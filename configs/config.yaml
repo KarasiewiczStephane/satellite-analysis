@@ -1,0 +1,49 @@
+data:
+  eurosat_url: "https://madm.dfki.de/files/sentinel/EuroSAT.zip"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  sample_dir: "data/sample"
+  bands: ["B04", "B03", "B02", "B08"]
+  image_size: 64
+  num_classes: 10
+  classes:
+    - AnnualCrop
+    - Forest
+    - HerbaceousVegetation
+    - Highway
+    - Industrial
+    - Pasture
+    - PermanentCrop
+    - Residential
+    - River
+    - SeaLake
+  splits:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+
+model:
+  architecture: "resnet50"
+  pretrained: true
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 32
+  epochs: 50
+  early_stopping_patience: 5
+  use_amp: true
+
+change_detection:
+  sensitivity_threshold: 0.3
+  min_change_area: 100
+
+export:
+  output_dir: "outputs"
+  crs: "EPSG:4326"
+
+dashboard:
+  host: "0.0.0.0"
+  port: 8501
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
