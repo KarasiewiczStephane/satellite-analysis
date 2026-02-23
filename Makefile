@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker dashboard
+.PHONY: install test lint clean run dashboard docker-build docker-run docker-compose-up docker-compose-down docker-gpu
 
 install:
 	pip install -r requirements.txt
@@ -20,6 +20,17 @@ run:
 dashboard:
 	streamlit run src/dashboard/app.py --server.port 8501
 
-docker:
-	docker build -t $(shell basename $(CURDIR)) .
-	docker run -p 8501:8501 $(shell basename $(CURDIR))
+docker-build:
+	docker build -t satellite-analysis .
+
+docker-run:
+	docker run -p 8501:8501 -v $(PWD)/data:/app/data -v $(PWD)/outputs:/app/outputs satellite-analysis
+
+docker-compose-up:
+	docker-compose up -d
+
+docker-compose-down:
+	docker-compose down
+
+docker-gpu:
+	docker-compose --profile gpu up -d app-gpu
