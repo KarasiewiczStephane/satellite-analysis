@@ -51,7 +51,7 @@ A production-ready deep learning platform for analyzing satellite imagery, featu
 
 ## Quick Start
 
-### Installation
+### 1. Install
 
 ```bash
 git clone https://github.com/KarasiewiczStephane/satellite-analysis.git
@@ -60,34 +60,63 @@ cd satellite-analysis
 python -m venv venv
 source venv/bin/activate
 
-pip install -r requirements.txt
+make install
+# or: pip install -r requirements.txt
 ```
 
-### Download Dataset
+> **System dependencies (Linux):** geospatial libraries require `libgdal-dev libgeos-dev libproj-dev`.
+
+### 2. Download the EuroSAT Dataset
+
+A handful of sample images ship in `data/sample/` so you can explore the dashboard
+immediately. To download the full EuroSAT dataset (~90 MB) for training:
 
 ```bash
 python -m src.main download
 ```
 
-### Train Model
+This fetches the EuroSAT zip into `data/raw/` and extracts it automatically.
+
+### 3. Launch the Dashboard
+
+```bash
+make dashboard
+# or: streamlit run src/dashboard/app.py --server.port 8501
+```
+
+Open **http://localhost:8501** in your browser. The dashboard supports:
+- Single image classification with probability charts
+- Change detection between two temporal images
+- Time series analysis across multiple images
+- Image upload directly from the sidebar
+
+### 4. Train a Model (optional)
 
 ```bash
 python -m src.main train --architecture resnet50 --epochs 50
 ```
 
-### Run Dashboard
+Training saves checkpoints to `checkpoints/`. The dashboard automatically loads
+`checkpoints/best_model.pt` when available.
+
+### 5. CLI Commands
 
 ```bash
-make dashboard
-# or
-streamlit run src/dashboard/app.py
+python -m src.main --help        # Show all commands
+python -m src.main download      # Download EuroSAT dataset
+python -m src.main train         # Train classifier (supports --architecture, --epochs)
+python -m src.main evaluate      # Evaluate a trained model
+python -m src.main predict       # Run prediction on an image (supports --image)
 ```
 
 ### Docker
 
 ```bash
-docker-compose up -d
+make docker-compose-up
 # Dashboard at http://localhost:8501
+
+# GPU support (requires nvidia-docker):
+make docker-gpu
 ```
 
 ## Usage Examples
@@ -164,11 +193,10 @@ satellite-analysis/
 ## Development
 
 ```bash
-# Run tests
-make test
-
-# Lint and format
-make lint
+make test             # pytest tests/ -v --tb=short --cov=src
+make lint             # ruff check + ruff format on src/ and tests/
+make clean            # Remove __pycache__ and .pyc files
+make run              # Show CLI help (python -m src.main)
 
 # Full quality check
 pre-commit run --all-files
