@@ -67,6 +67,14 @@ def load_image_from_path(path: Path) -> tuple[np.ndarray, np.ndarray]:
     return image_np, image_tensor
 
 
+def preprocess_image(uploaded_file: io.BytesIO) -> tuple[np.ndarray, np.ndarray]:
+    """Preprocess an uploaded file into (display HWC uint8, tensor CHW float32)."""
+    img = Image.open(uploaded_file).convert("RGB")
+    image_np = np.array(img)
+    image_tensor = image_np.transpose(2, 0, 1).astype(np.float32) / 255.0
+    return image_np, image_tensor
+
+
 # ---------------------------------------------------------------------------
 # Model helpers
 # ---------------------------------------------------------------------------
